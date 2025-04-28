@@ -1,15 +1,18 @@
 package footballleague;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;  // Додаємо імпорт для ArrayList
+import java.time.LocalDate;  // Додаємо імпорт для LocalDate
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LeagueManager {
     private DataStorageManager dataStorageManager;
-    private MatchExecutor matchExecutor;
+    private ExecutorService matchExecutor;
 
     public LeagueManager(DataStorageManager dataStorageManager) {
         this.dataStorageManager = dataStorageManager;
-        this.matchExecutor = new MatchExecutor();
+        this.matchExecutor = Executors.newFixedThreadPool(2);  // Використовуємо пул потоків для виконання матчів
     }
 
     public void addSampleData() {
@@ -21,12 +24,12 @@ public class LeagueManager {
         try {
             dataStorageManager.addTeam(team);
         } catch (TeamAlreadyExistsException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Помилка: " + e.getMessage());
         }
     }
 
     public List<Team> getTeams() {
-        return (List<Team>) dataStorageManager.getTeams();
+        return new ArrayList<>(dataStorageManager.getTeams());  // Перетворюємо Collection в List
     }
 
     public boolean addMatch(String homeName, String awayName, int homeScore, int awayScore) {
@@ -37,9 +40,8 @@ public class LeagueManager {
             return false;
         }
 
-        Match match = new Match(homeTeam, awayTeam, homeScore, awayScore, LocalDate.now());
-        dataStorageManager.addMatch(match);
-        matchExecutor.executeMatch(match);  // Виконання матчу в окремому потоці
+        Match match = new Match(homeTeam, awayTeam, homeScore, awayScore, LocalDate.now());  // Додаємо поточну дату як параметр
+        matchExecutor.submit(() -> dataStorageManager.addMatch(match));  // Виконання матчу в окремому потоці
         return true;
     }
 
@@ -47,13 +49,7 @@ public class LeagueManager {
         return dataStorageManager.getMatches();
     }
 
-    // Використання Stream API для отримання команд з більше ніж 10 очками
-    public List<Team> getTeamsWithMoreThan10Points() {
-        return dataStorageManager.getTeamsWithMoreThanNPoints(10);
-    }
-
-    // Публічний метод для доступу до matchExecutor
-    public MatchExecutor getMatchExecutor() {
-        return matchExecutor;
+    public void shutdown() {
+        matchExecutor.shutdown();  // Завершуємо потоки після виконання
     }
 }

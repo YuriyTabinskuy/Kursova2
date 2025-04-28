@@ -60,12 +60,12 @@ public class DataStorageManager {
 
         // Оновлюємо очки командам
         if (match.getHomeScore() > match.getAwayScore()) {
-            match.getHomeTeam().addPoints(3);
+            match.getHomeTeam().setPoints(match.getHomeTeam().getPoints() + 3);
         } else if (match.getHomeScore() < match.getAwayScore()) {
-            match.getAwayTeam().addPoints(3);
+            match.getAwayTeam().setPoints(match.getAwayTeam().getPoints() + 3);
         } else {
-            match.getHomeTeam().addPoints(1);
-            match.getAwayTeam().addPoints(1);
+            match.getHomeTeam().setPoints(match.getHomeTeam().getPoints() + 1);
+            match.getAwayTeam().setPoints(match.getAwayTeam().getPoints() + 1);
         }
     }
 
