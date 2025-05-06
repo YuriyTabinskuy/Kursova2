@@ -7,14 +7,14 @@ public class Match {
     private Team awayTeam;
     private int homeScore;
     private int awayScore;
-    private LocalDate matchDate;
+    private LocalDate date;
 
-    public Match(Team homeTeam, Team awayTeam, int homeScore, int awayScore, LocalDate matchDate) {
+    public Match(Team homeTeam, Team awayTeam, int homeScore, int awayScore, LocalDate date) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.homeScore = homeScore;
         this.awayScore = awayScore;
-        this.matchDate = matchDate;
+        this.date = date;
     }
 
     public Team getHomeTeam() {
@@ -33,7 +33,13 @@ public class Match {
         return awayScore;
     }
 
-    public LocalDate getMatchDate() {
-        return matchDate;
+    public LocalDate getDate() {
+        return date;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%d) - (%d) %s | Дата: %s",
+                homeTeam.getName(), homeScore, awayScore, awayTeam.getName(), date);
     }
 }

@@ -1,7 +1,6 @@
 package footballleague;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -9,15 +8,12 @@ public class Main {
     private static Scanner scanner;
 
     public static void main(String[] args) {
-        // Ініціалізація менеджера ліги і сканера
         DataStorageManager dataStorageManager = new DataStorageManager();
         leagueManager = new LeagueManager(dataStorageManager);
         scanner = new Scanner(System.in);
 
-        // Додати стартові дані
         leagueManager.addSampleData();
 
-        // Головне меню
         boolean exit = false;
         while (!exit) {
             printMenu();
@@ -33,6 +29,7 @@ public class Main {
             }
         }
 
+        leagueManager.shutdown();
         System.out.println("Дякую за використання системи управління футбольною лігою!");
     }
 
@@ -40,7 +37,7 @@ public class Main {
         System.out.println("\n--- Меню ---");
         System.out.println("1. Додати команду");
         System.out.println("2. Переглянути всі команди");
-        System.out.println("3. Додати матч");
+        System.out.println("3. Додати матч (рахунок генерується випадково)");
         System.out.println("4. Переглянути всі матчі");
         System.out.println("5. Вийти");
         System.out.print("Ваш вибір: ");
@@ -57,7 +54,7 @@ public class Main {
     }
 
     private static void listTeams() {
-        List<Team> teams = new ArrayList<>(leagueManager.getTeams());  // Використовуємо ArrayList для перетворення Collection в List
+        List<Team> teams = leagueManager.getTeams();
         if (teams.isEmpty()) {
             System.out.println("Немає команд для відображення.");
         } else {
@@ -73,10 +70,11 @@ public class Main {
         String homeName = scanner.nextLine();
         System.out.print("Введіть назву виїзної команди: ");
         String awayName = scanner.nextLine();
-        System.out.print("Введіть кількість забитих голів домашньої команди: ");
-        int homeScore = readInt();
-        System.out.print("Введіть кількість забитих голів виїзної команди: ");
-        int awayScore = readInt();
+
+        int homeScore = (int) (Math.random() * 3);  // 0–2
+        int awayScore = (int) (Math.random() * 3);
+
+        System.out.println("Згенерований рахунок: " + homeScore + " - " + awayScore);
 
         boolean success = leagueManager.addMatch(homeName, awayName, homeScore, awayScore);
         if (success) {
@@ -101,10 +99,10 @@ public class Main {
     private static int readInt() {
         while (!scanner.hasNextInt()) {
             System.out.println("Введіть коректне число!");
-            scanner.next(); // Пропустити некоректне введення
+            scanner.next();
         }
         int value = scanner.nextInt();
-        scanner.nextLine(); // Прочитати пропущений \n після числа
+        scanner.nextLine(); // Очистити \n
         return value;
     }
 }
